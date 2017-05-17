@@ -1,6 +1,8 @@
 const express = require('express');
 const svr = express();
 
+svr.use(express.static(__dirname+'/public'));
+
 svr.get('/', (req, res) => {
 	res.send({
 		firstName: 'John',
@@ -11,7 +13,7 @@ svr.get('/', (req, res) => {
 			'C++','JavaScript','HTML','CSS','jQuery','Node.js','Express','MongoDB','React',
 		],
 		sayHello(){
-			console.log(`${firstName}: Hello, Express!`);
+			console.log('Hello, Express!');
 		},
 	});
 });
@@ -26,4 +28,6 @@ svr.get('/bad', (req, res) => {
 	});
 });
 
-svr.listen(3000);
+svr.listen(3000, () => {
+	console.log('Server is up on port 3000');
+});
