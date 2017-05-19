@@ -1,25 +1,49 @@
 const express = require('express');
+const hbs = require('hbs');
+const fs = require('fs');
+
 const svr = express();
 
-svr.use(express.static(__dirname+'/public'));
+hbs.registerPartials(`${__dirname}/views/partials`);
+svr.set('view engine', 'hbs');
+
+svr.use((req, res, next) => {
+	const now = new Date().toString();
+	const log = `${now}: ${req.method} ${req.url}`;
+	console.log(log);
+	fs.appendFile('server.log', `${log}\n`, (err) => {
+		if (err) {
+			console.log('Unable to append server.log');
+		}
+	});
+	next();
+});
+
+// svr.use((req, res, next) => {
+// 	res.render('maintenance.hbs');
+// });
+
+svr.use(express.static(`${__dirname}/public`));
+
+hbs.registerHelper('getCurrentYear', () => {
+	return new Date().getFullYear();
+});
+
+hbs.registerHelper('screamIt', (text) => {
+	return text.toUpperCase();
+});
 
 svr.get('/', (req, res) => {
-	res.send({
-		firstName: 'John',
-		lastName: 'Smith',
-		age: 30,
-		engineer: true,
-		skills: [
-			'C++','JavaScript','HTML','CSS','jQuery','Node.js','Express','MongoDB','React',
-		],
-		sayHello(){
-			console.log('Hello, Express!');
-		},
+	res.render('home.hbs', {
+		pageTitle: 'Home Page',
+		welcomeMessage: 'Welcome to Some Website!',
 	});
 });
 
 svr.get('/about', (req, res) => {
-	res.send('<h1>About Page</h1>');
+	res.render('about.hbs', {
+		pageTitle: 'About Page',
+	});
 });
 
 svr.get('/bad', (req, res) => {
@@ -29,5 +53,5 @@ svr.get('/bad', (req, res) => {
 });
 
 svr.listen(3000, () => {
-	console.log('Server is up on port 3000');
+	console.log('SUCCESS => Server is up on port 3000');
 });
