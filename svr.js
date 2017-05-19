@@ -2,12 +2,13 @@ const express = require('express');
 const hbs = require('hbs');
 const fs = require('fs');
 
-const svr = express();
+const port = process.env.PORT || 3000;
+const app = express();
 
 hbs.registerPartials(`${__dirname}/views/partials`);
-svr.set('view engine', 'hbs');
+app.set('view engine', 'hbs');
 
-svr.use((req, res, next) => {
+app.use((req, res, next) => {
 	const now = new Date().toString();
 	const log = `${now}: ${req.method} ${req.url}`;
 	console.log(log);
@@ -19,11 +20,12 @@ svr.use((req, res, next) => {
 	next();
 });
 
-// svr.use((req, res, next) => {
+// MAINTENANCE MESSAGE
+// app.use((req, res, next) => {
 // 	res.render('maintenance.hbs');
 // });
 
-svr.use(express.static(`${__dirname}/public`));
+app.use(express.static(`${__dirname}/public`));
 
 hbs.registerHelper('getCurrentYear', () => {
 	return new Date().getFullYear();
@@ -33,25 +35,25 @@ hbs.registerHelper('screamIt', (text) => {
 	return text.toUpperCase();
 });
 
-svr.get('/', (req, res) => {
+app.get('/', (req, res) => {
 	res.render('home.hbs', {
 		pageTitle: 'Home Page',
 		welcomeMessage: 'Welcome to Some Website!',
 	});
 });
 
-svr.get('/about', (req, res) => {
+app.get('/about', (req, res) => {
 	res.render('about.hbs', {
 		pageTitle: 'About Page',
 	});
 });
 
-svr.get('/bad', (req, res) => {
+app.get('/bad', (req, res) => {
 	res.send({
 		error: 'ERROR => Unable to fulfill request'
 	});
 });
 
-svr.listen(3000, () => {
-	console.log('SUCCESS => Server is up on port 3000');
+app.listen(port, () => {
+	console.log(`SUCCESS => Server is up on port ${port}`);
 });
